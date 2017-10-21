@@ -28,8 +28,8 @@ class Network(object):
 		
 	def train (self, training_data, epochs=10000000, check=10, lr=0.03, test_data=None):
 		total = len(training_data)
+		start_time = time()
 		for iter in xrange(epochs):
-			start_time = time()
 			for x, y in training_data:
 				activation = reshape(x, (self.no_features, 1))
 				activations = [activation]
