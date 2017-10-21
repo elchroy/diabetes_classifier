@@ -1,5 +1,6 @@
 from numpy import reshape, array, zeros, random, exp, ones
 from time import time
+from pdb import set_trace
 class Network(object):
 	
 	def __init__ (self, sizes):
@@ -17,6 +18,7 @@ class Network(object):
 
 	def evaluate (self, test_data, accuracy=0.0, compare=False):
 		total = len(test_data)
+		test_data = [ ( self.normalize(xt), yt) for xt, yt in test_data ]
 		for x_test, y_test in test_data:
 			act = reshape(x_test, (self.no_features, 1))
 			for l in xrange(self.size):
@@ -24,15 +26,23 @@ class Network(object):
 			if self.is_correct(act, y_test):
 				accuracy += 1
 			if compare:
+				print act, y_test
 				pass
-				# print act, y_test
 		return accuracy, total
 
 	def is_correct (self, act, target):
 		return round(act) == target
+
+	# This is the Min-Max Normalization
+	def normalize (self, xtrain):
+		return (xtrain - xtrain.min()) / (xtrain.max() - xtrain.min())
+		
+	def standardize (self, xtrain):
+		return (xtrain - xtrain.mean()) / xtrain.std()
 		
 	def train (self, training_data, epochs=10000000, momentum_factor=0.5, check=10, lr=0.03, mini_batch_size=None, test_data=None):
 		total = len(training_data)
+		training_data = [ ( self.normalize(xt), yt) for xt, yt in training_data ]
 		start_time = time()
 		if mini_batch_size == None: mini_batch_size = total
 		random.shuffle(training_data)

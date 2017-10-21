@@ -13,7 +13,6 @@ train = genfromtxt('diabetes_train.csv', delimiter=",")
 test = genfromtxt('diabetes_test.csv', delimiter=",")
 
 x_train = train[:, 0:num_of_features]
-x_train = [ [ (i - xt.min())/(xt.max() - xt.min()) for i in xt ] for xt in x_train]
 y_train = train[:, [num_of_features]]
 
 training_data = zip(x_train, y_train)
