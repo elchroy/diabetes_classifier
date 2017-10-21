@@ -1,0 +1,16 @@
+# Factors to note while documenting
+# - Training time, for the dataset
+# - Number of layers and the number of neurons in each layer
+# - Number of epochs
+# - Describe the training set - No of training examples, number of features, etc
+# - Learning rate used.
+# - Attained accuracy - 93.2692307692% and at what iteration
+# - Challenges
+# - What next to add : Determining hyper parameters
+
+
+
+
+Issues with Abnormal feature values
+- Standardization
+- Normalization

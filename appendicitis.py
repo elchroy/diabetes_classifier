@@ -69,4 +69,8 @@ After 4030 in 845.584208965 seconds
 7, 3000, 30, 1
 
 
+After adding Standardization and Normalization
+Accuracy: 99.0/104 => 95.1923076923%
+After 3360 in 725.729406118 seconds
+7, 3000, 30, 1
 """
