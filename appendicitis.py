@@ -6,7 +6,7 @@ from numpy import genfromtxt
 
 # instantiate the network
 num_of_features = 7
-net = Network([num_of_features, 3000, 50, 1])
+net = Network([num_of_features, 3000, 30, 1])
 
 # Prepare the training data
 train = genfromtxt('appendicitis_train.csv', delimiter=",")
@@ -18,7 +18,7 @@ y_train = train[:, [num_of_features]]
 training_data = zip(x_train, y_train)
 
 # Train the neural network
-net.train(training_data, mini_batch_size=13, lr=0.003, check=10)
+net.train(training_data, mini_batch_size=13, lr=0.03, check=10)
 
 
 """
@@ -55,4 +55,18 @@ Shape 7, 3000, 30, 1
 Accuracy: 95.0/104 => 91.3461538462%
 After 670 in 99.6266269684 seconds
 7, 3000, 30, 1, with lr=0.03 
+
+
+# With some momentum, factor of 0.5
+Accuracy: 96.0/104 => 92.3076923077%
+After 1610 in 343.665721178 seconds
+
+Accuracy: 97.0/104 => 93.2692307692%
+After 2040 in 442.448112011 seconds
+
+Accuracy: 98.0/104 => 94.2307692308%
+After 4030 in 845.584208965 seconds
+7, 3000, 30, 1
+
+
 """

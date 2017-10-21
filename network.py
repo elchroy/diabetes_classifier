@@ -1,4 +1,4 @@
-from numpy import reshape, array, zeros, random, exp
+from numpy import reshape, array, zeros, random, exp, ones
 from time import time
 class Network(object):
 	
@@ -7,11 +7,13 @@ class Network(object):
 		self.sizes = sizes
 		self.num_of_layers = len(sizes)
 		self.size = self.num_of_layers - 1
-		self.no_features = self.sizes[0]
+		self.no_features = self.sizes[0]		
 		self.weights = [2 * random.random((a, b)) - 1 for a, b in zip(sizes[:-1], sizes[1:]) ]
-		self.biases = [2 * random.random((a, 1)) - 1 for a in sizes[1:]]
+		self.biases = [2 * random.random((a, 1)) - 1 for a in sizes[1:]]		
 		self.weight_deltas = [ zeros(w.shape) for w in self.weights]
 		self.bias_deltas = [ zeros(b.shape) for b in self.biases]
+		self.bias_velocities = [ zeros(b.shape) for b in self.biases]
+		self.weight_velocities = [ zeros(w.shape) for w in self.weights]
 
 	def evaluate (self, test_data, accuracy=0.0, compare=False):
 		total = len(test_data)
@@ -25,7 +27,7 @@ class Network(object):
 				print act, y_test
 		return accuracy, total
 		
-	def train (self, training_data, epochs=10000000, check=10, lr=0.03, mini_batch_size=None, test_data=None):
+	def train (self, training_data, epochs=10000000, momentum_factor=0.5, check=10, lr=0.03, mini_batch_size=None, test_data=None):
 		total = len(training_data)
 		start_time = time()
 		if mini_batch_size == None: mini_batch_size = total
@@ -50,8 +52,10 @@ class Network(object):
 						delta = (self.weights[-l-1] * self.sigmoid_derivative(activations[-l-2])).dot(delta)
 
 					for l in xrange(self.size):
-						self.biases[l] = self.biases[l] - ((lr/batch_total) * self.bias_deltas[l])
-						self.weights[l] = self.weights[l] - ((lr/batch_total) * self.weight_deltas[l])
+						self.bias_velocities[l] = (momentum_factor * self.bias_velocities[l]) - ((lr/batch_total) * self.bias_deltas[l])
+						self.weight_velocities[l] = (momentum_factor * self.weight_velocities[l]) - ((lr/batch_total) * self.weight_deltas[l])
+						self.biases[l] = self.biases[l] + self.bias_velocities[l]
+						self.weights[l] = self.weights[l] + self.weight_velocities[l]
 
 				if iter % check == 0:
 					accuracy = 0.0
