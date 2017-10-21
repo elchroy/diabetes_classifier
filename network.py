@@ -21,16 +21,21 @@ class Network(object):
 			act = reshape(x_test, (self.no_features, 1))
 			for l in xrange(self.size):
 				act = self.sigmoid(self.weights[l].T.dot(act) + self.biases[l])
-			if round(act) == y_test:
+			if self.is_correct(act, y_test):
 				accuracy += 1
 			if compare:
-				print act, y_test
+				pass
+				# print act, y_test
 		return accuracy, total
+
+	def is_correct (self, act, target):
+		return round(act) == target
 		
 	def train (self, training_data, epochs=10000000, momentum_factor=0.5, check=10, lr=0.03, mini_batch_size=None, test_data=None):
 		total = len(training_data)
 		start_time = time()
 		if mini_batch_size == None: mini_batch_size = total
+		random.shuffle(training_data)
 		mini_batches = [ training_data[k:k+mini_batch_size] for k in xrange(0, total, mini_batch_size)]
 			
 		for iter in xrange(epochs):
@@ -57,15 +62,15 @@ class Network(object):
 						self.biases[l] = self.biases[l] + self.bias_velocities[l]
 						self.weights[l] = self.weights[l] + self.weight_velocities[l]
 
-				if iter % check == 0:
-					accuracy = 0.0
-					if test_data != None:
-						accuracy, test_total = self.evaluate(test_data, compare=True)
-					else:
-						accuracy, test_total = self.evaluate(training_data)
+			if iter % check == 0:
+				accuracy = 0.0
+				if test_data != None:
+					accuracy, test_total = self.evaluate(test_data, compare=True)
+				else:
+					accuracy, test_total = self.evaluate(training_data)
 
-					print "Accuracy: {0}/{1} => {2}%".format(accuracy, test_total, 100*(accuracy/test_total))
-					print "After {0} in {1} seconds\n".format(iter, time() - start_time)
+				print "Accuracy: {0}/{1} => {2}%".format(accuracy, test_total, 100*(accuracy/test_total))
+				print "After {0} in {1} seconds\n".format(iter, time() - start_time)
 
 	def sigmoid (self, x):
 		return 1 / (1 + exp(-x))
