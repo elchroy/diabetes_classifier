@@ -14,3 +14,13 @@
 Issues with Abnormal feature values
 - Standardization
 - Normalization
+
+
+
+# Choosing Hyperparameters
+## Learning Rate
+- Start with 3 values, and select the one that contributes to better training. Ensure to keep other parameters constant.
+- With each value of the cost function, study to see if the cost function is reducing or increasing.
+- You can equally use varying learning rates, starting with a large rate, and reducing the learning rate by a factor or a constant value. This is called Learning Rate scheduling.
+- 
+- 
