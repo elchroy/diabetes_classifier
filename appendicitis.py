@@ -3,6 +3,7 @@ Artificial Neural Networks - Classification (Appendicitis)
 """
 from network import *
 from numpy import genfromtxt
+from sys import argv
 
 # instantiate the network
 num_of_features = 7
@@ -17,8 +18,13 @@ y_train = train[:, [num_of_features]]
 
 training_data = zip(x_train, y_train)
 
+if len(argv) > 1:
+	lr = float(argv[1])
+else:
+	lr = 0.03
+
 # Train the neural network
-net.train(training_data, mini_batch_size=13, lr=0.03, check=10)
+net.train(training_data, mini_batch_size=13, lr=lr, check=10)
 
 
 """

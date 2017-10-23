@@ -24,3 +24,14 @@ Issues with Abnormal feature values
 - You can equally use varying learning rates, starting with a large rate, and reducing the learning rate by a factor or a constant value. This is called Learning Rate scheduling.
 - 
 - 
+
+Appendicitis
+With
+sizes = [7, 3000, 30, 1]
+lr = 2.5, after 170 epochs, accuracy = 80.7692307692%
+lr = 0.25, after 50 epochs, accuracy = 82.6923076923%
+lr = 0.025, after 170 epochs, accuracy = 81.7307692308%
+So lr = 0.25 is a good start
+lr = 0.1375, after 60, 83.6538461538
+lr = 0.1375, after 550, 91.3461538462
+lr = 0.25, after 550, 92.3076923077
