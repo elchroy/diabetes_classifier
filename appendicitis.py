@@ -24,7 +24,8 @@ else:
 	lr = 0.03
 
 # Train the neural network
-net.train(training_data, mini_batch_size=13, lr=lr, check=10)
+params = net.train(training_data, epochs=1000, mini_batch_size=13, lr=lr, check=10)
+set_trace()
 
 
 """

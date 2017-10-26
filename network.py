@@ -18,7 +18,7 @@ class Network(object):
 
 	def evaluate (self, test_data, accuracy=0.0, compare=False):
 		total = len(test_data)
-		test_data = [ ( self.normalize(xt), yt) for xt, yt in test_data ]
+		# test_data = [ ( self.normalize(xt), yt) for xt, yt in test_data ]
 		for x_test, y_test in test_data:
 			act = reshape(x_test, (self.no_features, 1))
 			for l in xrange(self.size):
@@ -40,9 +40,11 @@ class Network(object):
 	def standardize (self, xtrain):
 		return (xtrain - xtrain.mean()) / xtrain.std()
 		
-	def train (self, training_data, epochs=10000000, momentum_factor=0.5, check=10, lr=0.03, mini_batch_size=None, test_data=None):
+	def train (self, training_data, epochs=1000, momentum_factor=0.5, rp=1.0, check=10, lr=0.03, mini_batch_size=None, test_data=None):
 		total = len(training_data)
 		training_data = [ ( self.normalize(xt), yt) for xt, yt in training_data ]
+		if test_data != None:
+			test_data = [ ( self.normalize(xt), yt) for xt, yt in test_data ]
 		start_time = time()
 		if mini_batch_size == None: mini_batch_size = total
 		random.shuffle(training_data)
@@ -51,19 +53,24 @@ class Network(object):
 		for iter in xrange(epochs):
 			for mini_batch in mini_batches:
 				batch_total = len(mini_batch)
+				weight_decay_factor = float(rp)/batch_total
+
 				for x, y in mini_batch:
+					# set_trace()
 					activation = reshape(x, (self.no_features, 1))
 					activations = [activation]
 					for we, bi in zip(self.weights, self.biases):
 						activation = self.sigmoid(we.T.dot(activation) + bi)
 						activations.append(activation)
 
-					error_derivative = self.cost_function_derivative(activations[-1], y)
+					error_derivative = self.cost_function_derivative(y, activations[-1])
 					delta = error_derivative * self.sigmoid_derivative(activations[-1])
-					
+
 					for l in xrange(self.size):
 						self.bias_deltas[-l-1] = delta
 						self.weight_deltas[-l-1] = activations[-l-2].dot(delta.T)
+						self.weight_deltas[-l-1] = self.weight_deltas[-l-1] + ((rp/total) * self.weight_deltas[-l-1])
+						# self.weight_deltas[-l-1] = self.weight_deltas[-l-1] + (weight_decay_factor * self.weights[-l-1])
 						delta = (self.weights[-l-1] * self.sigmoid_derivative(activations[-l-2])).dot(delta)
 
 					for l in xrange(self.size):
@@ -71,6 +78,11 @@ class Network(object):
 						self.weight_velocities[l] = (momentum_factor * self.weight_velocities[l]) - ((lr/batch_total) * self.weight_deltas[l])
 						self.biases[l] = self.biases[l] + self.bias_velocities[l]
 						self.weights[l] = self.weights[l] + self.weight_velocities[l]
+						# self.weights[l] = self.weights[l] - ((lr/batch_total) * self.weight_deltas[l])
+						
+						# self.weight_velocities[l] = (momentum_factor * self.weight_velocities[l]) - ((lr/batch_total) * self.weight_deltas[l]) - (((lr * rp) / batch_total) * self.weight_velocities[l])
+						# self.weight_velocities[l] = self.weight_velocities[l] - ((lr/batch_total) * self.weight_deltas[l])# - (((lr * rp) / batch_total) * self.weight_velocities[l])
+						# self.weights[l] = self.weights[l] - ((lr/batch_total) * self.weight_deltas[l])
 
 			if iter % check == 0:
 				accuracy = 0.0
@@ -82,12 +94,22 @@ class Network(object):
 				print "Accuracy: {0}/{1} => {2}%".format(accuracy, test_total, 100*(accuracy/test_total))
 				print "After {0} in {1} seconds\n".format(iter, time() - start_time)
 
+		return (self.weights, self.biases)
+
 	def sigmoid (self, x):
 		return 1 / (1 + exp(-x))
 
 	def sigmoid_derivative (self, x):
 		return x * (1 - x)
 
-	def cost_function_derivative (self, output, target):
+	def cost_function_derivative (self, target, output):
 		# This is the derivative of the Mean-Square Error Cost Function
 		return output - target
+
+
+
+
+	def cross_entropy (self, target_y, output_a):
+		part_one = target_y / output_a
+		part_two = (target_y - 1) / (1 - output_a)
+		return part_one + part_two
